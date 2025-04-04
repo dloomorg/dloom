@@ -10,6 +10,7 @@ import (
 )
 
 const permissions = 0750
+
 type LinkOptions struct {
 	// Config is the application configuration
 	Config *Config
@@ -25,7 +26,13 @@ func LinkPackages(opts LinkOptions, logger *logging.Logger) error {
 	}
 
 	for _, pkg := range opts.Packages {
-		if err := LinkPackage(pkg, opts.Config, logger); err != nil {
+		if opts.Config.ShouldIgnorePackage(pkg) {
+			if opts.Config.Verbose {
+				logger.LogInfo("Skipping linking package: %s", pkg)
+			}
+			continue
+		}
+		if err := linkPackage(pkg, opts.Config, logger); err != nil {
 			return fmt.Errorf("failed to link package %s: %w", pkg, err)
 		}
 
@@ -37,8 +44,8 @@ func LinkPackages(opts LinkOptions, logger *logging.Logger) error {
 	return nil
 }
 
-// LinkPackage creates symlinks for a single package
-func LinkPackage(pkgName string, cfg *Config, logger *logging.Logger) error {
+// linkPackage creates symlinks for a single package
+func linkPackage(pkgName string, cfg *Config, logger *logging.Logger) error {
 	// Check if package has conditions and if they match
 	pkgConfig := cfg.GetEffectiveConfig(pkgName, "")
 	if pkgConfig.Conditions != nil && !cfg.MatchesConditions(pkgConfig.Conditions, logger) {
@@ -98,6 +105,12 @@ func LinkPackage(pkgName string, cfg *Config, logger *logging.Logger) error {
 
 		// If it's a directory, create it in the target directory
 		if info.IsDir() {
+			if cfg.ShouldIgnorePackage(relPath) {
+				if cfg.Verbose {
+					logger.LogTrace("Skipping creating directory %s: since it was marked to be ignored", relPath)
+				}
+				return filepath.SkipDir
+			}
 			if cfg.IsDryRun(pkgName, relPath) {
 				return nil
 			}
@@ -121,6 +134,14 @@ func LinkPackage(pkgName string, cfg *Config, logger *logging.Logger) error {
 func linkFile(sourcePath, targetPath, relPath, pkgName string, cfg *Config, logger *logging.Logger) error {
 	// Create parent directories if needed
 	targetDir := filepath.Dir(targetPath)
+
+	// Check if file is marked to be ignored
+	if cfg.ShouldIgnorePackage(relPath) {
+		if cfg.Verbose {
+			logger.LogTrace("Skipping symlinking file %s since it is marked to be ignored", relPath)
+		}
+		return nil
+	}
 
 	if !cfg.IsDryRun(pkgName, relPath) {
 		if err := os.MkdirAll(targetDir, permissions); err != nil {

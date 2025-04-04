@@ -13,13 +13,14 @@ import (
 )
 
 type Config struct {
-	SourceDir string                    `yaml:"source_dir"`
-	TargetDir string                    `yaml:"target_dir"`
-	BackupDir string                    `yaml:"backup_dir"`
-	Force     bool                      `yaml:"force"`
-	Verbose   bool                      `yaml:"verbose"`
-	DryRun    bool                      `yaml:"dry_run"`
-	Packages  map[string]*PackageConfig `yaml:"link_overrides"`
+	SourceDir      string                    `yaml:"source_dir"`
+	TargetDir      string                    `yaml:"target_dir"`
+	BackupDir      string                    `yaml:"backup_dir"`
+	Force          bool                      `yaml:"force"`
+	Verbose        bool                      `yaml:"verbose"`
+	DryRun         bool                      `yaml:"dry_run"`
+	Packages       map[string]*PackageConfig `yaml:"link_overrides"`
+	IgnorePackages []string                  `yaml:"ignore_packages"`
 }
 
 type PackageConfig struct {
@@ -59,13 +60,17 @@ func DefaultConfig() *Config {
 	}
 
 	return &Config{
-		SourceDir: ".",     // Current directory by default
-		TargetDir: homeDir, // User's home directory by default
-		BackupDir: filepath.Join(homeDir, ".dloom/backups"),
-		Force:     false,
-		Verbose:   false,
-		DryRun:    false,
-		Packages:  make(map[string]*PackageConfig),
+		SourceDir:      ".",     // Current directory by default
+		TargetDir:      homeDir, // User's home directory by default
+		BackupDir:      filepath.Join(homeDir, ".dloom/backups"),
+		Force:          false,
+		Verbose:        false,
+		DryRun:         false,
+		Packages:       make(map[string]*PackageConfig),
+		IgnorePackages: []string{
+			".git",
+			".idea",
+			".gitignore"},
 	}
 }
 
@@ -176,6 +181,16 @@ func (c *Config) IsDryRun(packageName, relativePath string) bool {
 
 	// Return the effective dry run setting
 	return effectiveConfig.DryRun
+}
+
+// ShouldIgnorePackage checks if a package or a file should be skipped from Symlinking
+func (c *Config) ShouldIgnorePackage(relPath string) bool {
+	for _, ignoredPkg := range c.IgnorePackages {
+		if strings.HasSuffix(relPath, ignoredPkg) {
+			return true
+		}
+	}
+	return false
 }
 
 // ShouldForce returns whether force mode is enabled for a specific file
