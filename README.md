@@ -3,7 +3,7 @@
 A lightweight, flexible dotfile manager and system bootstrapper for macOS and Linux.
 
 ![Build Status](https://github.com/swaranga/dloom/actions/workflows/build.yml/badge.svg)
-![GitHub Release](https://img.shields.io/github/v/release/swaranga/dloom?include_prereleases)
+![GitHub Release](https://img.shields.io/github/v/release/dloomorg/dloom?include_prereleases)
 [![Ubuntu Snap](https://snapcraft.io/dloom/badge.svg)](https://snapcraft.io/dloom)
 [![Ubuntu Snap](https://snapcraft.io/dloom/trending.svg?name=0)](https://snapcraft.io/dloom)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -262,14 +262,15 @@ dloom -d unlink <package>...  # Dry run (preview only)
 
 ### Command-line Options
 
-| Option | Description |
-|--------|-------------|
-| `-c, --config` | Path to config file |
-| `-f, --force` | Force overwrite existing files |
-| `-v, --verbose` | Enable verbose output |
-| `-d, -n, --dry-run` | Show what would happen without making changes |
-| `-s, --source, --src` | Source directory |
-| `-t, --target, --dest` | Target directory |
+| Option                 | Description                                   |
+|------------------------|-----------------------------------------------|
+| `-V, --version`        | Latest release version                        |
+| `-c, --config`         | Path to config file                           |
+| `-f, --force`          | Force overwrite existing files                |
+| `-v, --verbose`        | Enable verbose output                         |
+| `-d, -n, --dry-run`    | Show what would happen without making changes |
+| `-s, --source, --src`  | Source directory                              |
+| `-t, --target, --dest` | Target directory                              |
 
 ## Conditional Linking
 

@@ -13,13 +13,15 @@ import (
 
 // Command-line flags
 var (
-	configPath string
-	force      bool
-	verbose    bool
-	dryRun     bool
-	sourceDir  string
-	targetDir  string
-	noColor    bool
+	configPath  string
+	force       bool
+	verbose     bool
+	dryRun      bool
+	sourceDir   string
+	targetDir   string
+	noColor     bool
+	showVersion bool
+	Version     = "dev"
 )
 
 func init() {
@@ -46,6 +48,9 @@ func init() {
 	flag.StringVar(&targetDir, "target", "", "Target directory (defaults to home directory)")
 	flag.StringVar(&targetDir, "dest", "", "Target directory (alias)")
 	flag.StringVar(&targetDir, "t", "", "Target directory (shorthand)")
+
+	flag.BoolVar(&showVersion, "version", false, "Show version and exit")
+	flag.BoolVar(&showVersion, "V", false, "Show version and exit (shorthand)")
 }
 
 func main() {
@@ -67,6 +72,11 @@ func main() {
 
 	// Parse flags
 	flag.Parse()
+
+	if showVersion {
+		fmt.Println("dloom version: ", Version)
+		return
+	}
 
 	// Need at least one argument (the command)
 	args := flag.Args()
