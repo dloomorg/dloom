@@ -5,8 +5,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/swaranga/dloom/internal"
-	"github.com/swaranga/dloom/internal/logging"
+	"github.com/dloomorg/dloom/internal"
+	"github.com/dloomorg/dloom/internal/logging"
 	"os"
 	"path/filepath"
 )

@@ -2,8 +2,8 @@ package internal
 
 import (
 	"fmt"
-	"github.com/swaranga/dloom/internal/conditions"
-	"github.com/swaranga/dloom/internal/logging"
+	"github.com/dloomorg/dloom/internal/conditions"
+	"github.com/dloomorg/dloom/internal/logging"
 	"os"
 	"path/filepath"
 	"regexp"

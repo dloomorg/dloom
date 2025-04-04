@@ -14,7 +14,7 @@ platforms:
 parts:
   dloom:
     plugin: go
-    source: https://github.com/swaranga/dloom
+    source: https://github.com/dloomorg/dloom
     source-type: git
     source-branch: main
     override-pull: |

@@ -2,8 +2,8 @@
 
 A lightweight, flexible dotfile manager and system bootstrapper for macOS and Linux.
 
-![Build Status](https://github.com/swaranga/dloom/actions/workflows/build.yml/badge.svg)
-![GitHub Release](https://img.shields.io/github/v/release/swaranga/dloom?include_prereleases)
+![Build Status](https://github.com/dloomorg/dloom/actions/workflows/build.yml/badge.svg)
+![GitHub Release](https://img.shields.io/github/v/release/dloomorg/dloom?include_prereleases)
 [![Ubuntu Snap](https://snapcraft.io/dloom/badge.svg)](https://snapcraft.io/dloom)
 [![Ubuntu Snap](https://snapcraft.io/dloom/trending.svg?name=0)](https://snapcraft.io/dloom)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -29,7 +29,7 @@ A lightweight, flexible dotfile manager and system bootstrapper for macOS and Li
 
 ### Pre-built Binaries
 
-`dloom` is a single cross-platform binary and can be installed on macOS and Linux. You can download the latest release from the [GitHub releases](https://github.com/swaranga/dloom/releases/) page. Simply download the `dloom` binary, and place it in your `PATH`.
+`dloom` is a single cross-platform binary and can be installed on macOS and Linux. You can download the latest release from the [GitHub releases](https://github.com/dloomorg/dloom/releases/) page. Simply download the `dloom` binary, and place it in your `PATH`.
 
 ### From Source
 
@@ -38,10 +38,10 @@ A lightweight, flexible dotfile manager and system bootstrapper for macOS and Li
 
 ```bash
 # Install from source
-go install github.com/swaranga/dloom
+go install github.com/dloomorg/dloom
 
 # Or clone and build
-git clone https://github.com/swaranga/dloom.git
+git clone https://github.com/dloomorg/dloom.git
 cd dloom
 go build -o bin/dloom
 ```
@@ -233,7 +233,7 @@ link_overrides:
 
 ### Full Configuration
 
-For a more complete example, check the [examples](https://github.com/swaranga/dloom/tree/main/examples/dloom) directory in the repository. It contains various configurations for different setups.
+For a more complete example, check the [examples](https://github.com/dloomorg/dloom/tree/main/examples/dloom) directory in the repository. It contains various configurations for different setups.
 
 ## Usage
 

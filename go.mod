@@ -1,4 +1,4 @@
-module github.com/swaranga/dloom
+module github.com/dloomorg/dloom
 
 go 1.24.1
 

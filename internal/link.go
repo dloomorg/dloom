@@ -3,13 +3,14 @@ package internal
 import (
 	"errors"
 	"fmt"
-	"github.com/swaranga/dloom/internal/logging"
+	"github.com/dloomorg/dloom/internal/logging"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
 const permissions = 0750
+
 type LinkOptions struct {
 	// Config is the application configuration
 	Config *Config
