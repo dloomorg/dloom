@@ -2,7 +2,7 @@ package internal
 
 import (
 	"fmt"
-	"github.com/swaranga/dloom/internal/logging"
+	"github.com/dloomorg/dloom/internal/logging"
 	"os"
 	"path/filepath"
 	"sort"

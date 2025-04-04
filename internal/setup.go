@@ -2,7 +2,7 @@ package internal
 
 import (
 	"fmt"
-	"github.com/swaranga/dloom/internal/logging"
+	"github.com/dloomorg/dloom/internal/logging"
 )
 
 // SetupOptions holds the options for setup operations
