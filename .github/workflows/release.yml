@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*.*.*'
+      - 'v*.*.*-test*'
 
 permissions:
   contents: write
@@ -24,9 +25,19 @@ jobs:
       - name: Build the project
         run: go build -o build/dloom
 
+      - name: Check if prerelease
+        id: prerelease
+        run: |
+          if [[ "${GITHUB_REF##*/}" == *-test* ]]; then
+            echo "IS_PRERELEASE=true" >> $GITHUB_ENV
+          else
+            echo "IS_PRERELEASE=false" >> $GITHUB_ENV
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: build/dloom
+          prerelease: ${{ env.IS_PRERELEASE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
