@@ -20,6 +20,7 @@ var (
 	sourceDir  string
 	targetDir  string
 	noColor    bool
+	postCmd    string
 )
 
 func init() {
@@ -46,6 +47,8 @@ func init() {
 	flag.StringVar(&targetDir, "target", "", "Target directory (defaults to home directory)")
 	flag.StringVar(&targetDir, "dest", "", "Target directory (alias)")
 	flag.StringVar(&targetDir, "t", "", "Target directory (shorthand)")
+
+	flag.StringVar(&postCmd, "post-cmd", "", "Command to run after executing main command")
 }
 
 func main() {
@@ -133,6 +136,15 @@ func main() {
 	if cmdErr != nil {
 		logger.LogError("Error: %v\n", cmdErr)
 		os.Exit(1)
+	}
+
+	if postCmd != "" {
+		logger.LogInfo("Running post command: %s", postCmd)
+
+		if err := internal.RunShellCommand(postCmd); err != nil {
+			logger.LogError("Post command failed: %v", err)
+			os.Exit(1)
+		}
 	}
 }
 
