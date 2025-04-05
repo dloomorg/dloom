@@ -3,7 +3,7 @@
 A lightweight, flexible dotfile manager and system bootstrapper for macOS and Linux.
 
 ![Build Status](https://github.com/dloomorg/dloom/actions/workflows/build.yml/badge.svg)
-![GitHub Release](https://img.shields.io/github/v/release/dloomorg/dloom?include_prereleases)
+![GitHub Release](https://img.shields.io/github/v/release/dloomorg/dloom)
 [![Ubuntu Snap](https://snapcraft.io/dloom/badge.svg)](https://snapcraft.io/dloom)
 [![Ubuntu Snap](https://snapcraft.io/dloom/trending.svg?name=0)](https://snapcraft.io/dloom)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
