@@ -60,13 +60,13 @@ func DefaultConfig() *Config {
 	}
 
 	return &Config{
-		SourceDir:      ".",     // Current directory by default
-		TargetDir:      homeDir, // User's home directory by default
-		BackupDir:      filepath.Join(homeDir, ".dloom/backups"),
-		Force:          false,
-		Verbose:        false,
-		DryRun:         false,
-		Packages:       make(map[string]*PackageConfig),
+		SourceDir: ".",     // Current directory by default
+		TargetDir: homeDir, // User's home directory by default
+		BackupDir: filepath.Join(homeDir, ".dloom/backups"),
+		Force:     false,
+		Verbose:   false,
+		DryRun:    false,
+		Packages:  make(map[string]*PackageConfig),
 		IgnorePackages: []string{
 			".git",
 			".idea",
@@ -82,19 +82,27 @@ func LoadConfig(configPath string, logger *logging.Logger) (*Config, error) {
 	// If no config path specified, look in default locations
 	// First try to find a
 	if configPath == "" {
-		logger.LogTrace("No config file path specified, using defaults")
+		if config.Verbose {
+			logger.LogTrace("No config file path specified, using defaults")
+		}
 		// First, try current directory and see if a dloom/config.yaml exists
 		// If not, try ~/.config/dloom/config.yaml
 		currentDir, err := os.Getwd()
 		if err == nil {
 			configPath = filepath.Join(currentDir, "dloom", "config.yaml")
-			logger.LogTrace("Attempting to load config file: %s", configPath)
+			if config.Verbose {
+				logger.LogTrace("Attempting to load config file: %s", configPath)
+			}
 			if _, err := os.Stat(configPath); os.IsNotExist(err) {
 				// Next, try ~/.config/dloom/config.yaml
 				homeDir, err := os.UserHomeDir()
 				if err == nil {
-					configPath = filepath.Join(homeDir, ".config", "dloom", "config.yaml")
-					logger.LogTrace("Attempting to load config file: %s", configPath)
+					if config.Verbose {
+						configPath = filepath.Join(homeDir, ".config", "dloom", "config.yaml")
+					}
+					if config.Verbose {
+						logger.LogTrace("Attempting to load config file: %s", configPath)
+					}
 					if _, err := os.Stat(configPath); os.IsNotExist(err) {
 						// No config file found, use defaults
 						return config, nil

@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 )
 
+var Version = "dev"
+
 var (
 	cfg    *internal.Config
 	logger *logging.Logger
@@ -26,6 +28,14 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "dloom",
 	Short: "Dotfile manager and system bootstrapper",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if v, _ := cmd.Flags().GetBool("version"); v {
+			fmt.Println("dloom version:", Version)
+			return nil
+		}
+		// If no version flag, show help
+		return cmd.Help()
+	},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		logger = &logging.Logger{UseColors: !noColor}
 
@@ -70,7 +80,7 @@ func Execute() {
 }
 
 func init() {
-	// Persistent Flags (global)
+	rootCmd.PersistentFlags().BoolP("version", "V", false, "Print the version of dloom and exit")
 	rootCmd.PersistentFlags().StringVarP(&configPath, "config", "c", "", "Path to config file")
 	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Disable color output")
 	rootCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force overwrite existing files")
