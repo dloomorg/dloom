@@ -27,7 +27,8 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Build the project
-        run: go build -ldflags "-X github.com/dloomorg/dloom/cmd.Version=${VERSION}" -o build/dloom
+        run: |
+          go build -ldflags "-X github.com/dloomorg/dloom/cmd.Version=${{ env.VERSION }}" -o build/dloom
 
       - name: Check if prerelease
         id: prerelease
