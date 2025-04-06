@@ -21,6 +21,7 @@ var (
 	sourceDir  string
 	targetDir  string
 	noColor    bool
+	postCmd    string
 )
 
 var rootCmd = &cobra.Command{
@@ -78,4 +79,5 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&dryRun, "dry-run", "d", false, "Dry run (show actions without executing)")
 	rootCmd.PersistentFlags().StringVarP(&sourceDir, "source", "s", "", "Source directory")
 	rootCmd.PersistentFlags().StringVarP(&targetDir, "target", "t", "", "Target directory")
+	rootCmd.PersistentFlags().StringVarP(&postCmd, "post-cmd", "p", "", "Post command")
 }
