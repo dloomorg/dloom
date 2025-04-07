@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dloomorg/dloom/internal/conditions"
 	"github.com/dloomorg/dloom/internal/logging"
@@ -8,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"syscall"
 
 	"gopkg.in/yaml.v3"
 )
@@ -116,7 +118,7 @@ func LoadConfig(configPath string, logger *logging.Logger) (*Config, error) {
 	logger.LogTrace("Loading config file: %s", configPath)
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if os.IsNotExist(err) || errors.Is(err, syscall.ENOTDIR) {
 			// File doesn't exist, return defaults
 			logger.LogWarning("Config file: %s not found, using defaults", configPath)
 			return config, nil
