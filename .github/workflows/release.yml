@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - 'v*.*.*'
-      - 'v*.*.*-test*'
+      - 'v*.*.*.rc.*'
 
 permissions:
   contents: write
@@ -33,7 +33,7 @@ jobs:
       - name: Check if prerelease
         id: prerelease
         run: |
-          if [[ "${GITHUB_REF##*/}" == *-test* ]]; then
+          if [[ "${GITHUB_REF##*/}" == *".rc."* ]]; then
             echo "IS_PRERELEASE=true" >> $GITHUB_ENV
           else
             echo "IS_PRERELEASE=false" >> $GITHUB_ENV
