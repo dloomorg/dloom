@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-var Version = "dev"
+var Version string
 
 var (
 	cfg    *internal.Config
@@ -30,7 +30,7 @@ var rootCmd = &cobra.Command{
 	Short: "Dotfile manager and system bootstrapper",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if v, _ := cmd.Flags().GetBool("version"); v {
-			fmt.Println("dloom version:", Version)
+			fmt.Println("dloom version:", ifEmpty(Version, "dev"))
 			return nil
 		}
 		// If no version flag, show help
@@ -70,6 +70,13 @@ var rootCmd = &cobra.Command{
 
 		return nil
 	},
+}
+
+func ifEmpty(s, fallback string) string {
+	if s == "" {
+		return fallback
+	}
+	return s
 }
 
 // Execute runs the root command
