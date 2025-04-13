@@ -14,17 +14,17 @@ type BootstrapOptions struct {
 	// Config is the application configuration
 	Config *Config
 
-	// Packages is the list of package names to link
-	target string
+	// Target is the repository URL or directory path to bootstrap
+	Target string
 }
 
 // Bootstrap handles the repository cloning and git installation, or bootstrapping an existing directory
 func Bootstrap(opts BootstrapOptions, logger *logging.Logger) error {
 	// Check if target is a URL or directory
-	if isURL(opts.target) {
-		return bootstrapFromURL(opts.target, logger, opts.Config)
+	if isURL(opts.Target) {
+		return bootstrapFromURL(opts.Target, logger, opts.Config)
 	}
-	return bootstrapFromDirectory(opts.target, logger, opts.Config)
+	return bootstrapFromDirectory(opts.Target, logger, opts.Config)
 }
 
 func bootstrapFromURL(repoURL string, logger *logging.Logger, cfg *Config) error {
@@ -45,7 +45,7 @@ func bootstrapFromURL(repoURL string, logger *logging.Logger, cfg *Config) error
 	// Check if repository directory already exists
 	if _, err := os.Stat(repoName); err == nil {
 		logger.LogInfo("Directory %s already exists, bootstrapping from existing directory", repoName)
-		return bootstrapFromDirectory(repoName, logger)
+		return bootstrapFromDirectory(repoName, logger, cfg)
 	}
 
 	if cfg.Verbose {

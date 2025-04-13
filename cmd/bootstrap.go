@@ -13,7 +13,7 @@ var bootstrapCmd = &cobra.Command{
 		target := args[0]
 		opts := internal.BootstrapOptions{
 			Config:   cfg,
-			target: target,
+			Target: target,
 		}
 		return internal.Bootstrap(opts, logger)
 	},
