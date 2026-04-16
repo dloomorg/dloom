@@ -22,7 +22,7 @@ parts:
       snapcraftctl set-version \
       "$(git describe --long --tags --always --match=v*.*.* | sed 's/v//')"
     build-snaps:
-      - go/1.24/stable
+      - go/1.26/stable
     build-packages:
       - make
     override-build: |
