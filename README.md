@@ -61,6 +61,12 @@ dloom link vim
 # Link multiple packages
 dloom link vim tmux bash
 
+# Link all packages in the current dotfiles directory
+dloom link .
+
+# Link all packages from a specific dotfiles directory
+dloom link ~/projects/dotfiles/
+
 # Link with verbose output
 dloom -v link vim
 
@@ -123,6 +129,9 @@ To remove the symlinks created by `dloom`, use the `unlink` command:
 ```bash
 # Unlink all dotfiles from your vim package
 dloom unlink vim
+
+# Unlink all packages in the current dotfiles directory
+dloom unlink .
 ```
 
 Unlink will only remove links if they were created by `dloom`, i.e - if the links are pointing to files in the source (usually the dotfiles) directory. Any extra files in the target directory will remain untouched. If `dloom` finds any backups for files that were unlinked, it will restore them. Finally, if the target directory becomes empty after unlinking (and if no backups were found), the directory will be removed. 
@@ -243,6 +252,12 @@ For a more complete example, check the [examples](https://github.com/dloomorg/dl
 # Basic linking
 dloom link <package>...
 
+# Link all packages in the current directory
+dloom link .
+
+# Link all packages from a specific directory
+dloom link ~/dotfiles/
+
 # Link with options
 dloom -v -f link <package>...  # Verbose and force overwrite
 
@@ -255,6 +270,9 @@ dloom -d link link tmux vim
 ```bash
 # Remove symlinks
 dloom unlink <package>...
+
+# Unlink all packages in the current directory
+dloom unlink .
 
 # Unlink with options
 dloom -d unlink <package>...  # Dry run (preview only)
@@ -291,6 +309,7 @@ dloom/
 │   ├── config.go       # Configuration handling
 │   ├── link.go         # Link implementation
 │   ├── unlink.go       # Unlink implementation
+│   ├── resolve.go      # Argument resolution and package enumeration
 │   └── setup.go        # System setup implementation
 └── examples/           # Sample configurations
 ```
