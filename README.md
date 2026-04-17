@@ -27,6 +27,13 @@ A lightweight, flexible dotfile manager and system bootstrapper for macOS and Li
 
 ## Installation
 
+### Homebrew (macOS and Linux)
+
+```bash
+brew tap dloomorg/dloom https://github.com/dloomorg/dloom
+brew install dloomorg/dloom/dloom
+```
+
 ### Pre-built Binaries
 
 `dloom` is a single cross-platform binary and can be installed on macOS and Linux. You can download the latest release from the [GitHub releases](https://github.com/dloomorg/dloom/releases/) page. Simply download the `dloom` binary, and place it in your `PATH`.
@@ -262,7 +269,7 @@ dloom link ~/dotfiles/
 dloom -v -f link <package>...  # Verbose and force overwrite
 
 # Use -d flag for dry run (preview only)
-dloom -d link link tmux vim
+dloom -d link tmux vim
 ```
 
 ### Unlinking Dotfiles
