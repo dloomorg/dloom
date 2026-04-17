@@ -1,6 +1,6 @@
 module github.com/dloomorg/dloom
 
-go 1.24.1
+go 1.26.2
 
 require (
 	github.com/spf13/cobra v1.9.1
