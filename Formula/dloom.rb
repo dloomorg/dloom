@@ -1,8 +1,8 @@
 class Dloom < Formula
   desc "Dotfile manager and system bootstrapper"
   homepage "https://github.com/dloomorg/dloom"
-  url "https://github.com/dloomorg/dloom/archive/refs/tags/v0.0.8.tar.gz"
-  sha256 "d7a6e79182a695bedb309e477ea8b8e2a30327b9803536c601d92428d38d7c2b"
+  url "https://github.com/dloomorg/dloom/archive/refs/tags/v0.0.9.rc.2.tar.gz"
+  sha256 "d65b756717385ce8f9b71c0ecb342aa4daa35807eb99338d624388bb2e0c6517"
   license "MIT"
   head "https://github.com/dloomorg/dloom.git", branch: "main"
 
