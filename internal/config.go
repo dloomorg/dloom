@@ -52,6 +52,7 @@ type ConditionSet struct {
 	Executable        []string          `yaml:"executable"`
 	ExecutableVersion map[string]string `yaml:"executable_version"`
 	User              []string          `yaml:"user"`
+	Hostname          []string          `yaml:"hostname"`
 }
 
 // DefaultConfig returns the default configuration
@@ -352,6 +353,12 @@ func (c *Config) MatchesConditions(conditionSet *ConditionSet, logger *logging.L
 	// Check user conditions
 	if len(conditionSet.User) > 0 &&
 		!conditions.MatchesUserCondition(conditionSet.User) {
+		return false
+	}
+
+	// Check hostname conditions
+	if len(conditionSet.Hostname) > 0 &&
+		!conditions.MatchesHostnameCondition(conditionSet.Hostname) {
 		return false
 	}
 

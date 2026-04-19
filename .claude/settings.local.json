@@ -14,7 +14,8 @@
       "Bash(/Users/pradipta.s/projects/dloom/bin/dloom -d link /tmp/test-dotfiles/)",
       "Bash(/Users/pradipta.s/projects/dloom/bin/dloom -d link vim)",
       "Bash(/Users/pradipta.s/projects/dloom/bin/dloom -d unlink .)",
-      "Bash(make clean *)"
+      "Bash(make clean *)",
+      "Bash(clear *)"
     ]
   }
 }
