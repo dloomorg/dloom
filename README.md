@@ -36,12 +36,12 @@ brew install dloomorg/dloom/dloom
 
 ### Pre-built Binaries
 
-`dloom` is a single cross-platform binary and can be installed on macOS and Linux. You can download the latest release from the [GitHub releases](https://github.com/dloomorg/dloom/releases/) page. Simply download the `dloom` binary, and place it in your `PATH`.
+`dloom` ships as separate binaries for each supported OS and CPU architecture. Download the release asset that matches your platform, extract it, and place the `dloom` binary in your `PATH`.
 
 ### From Source
 
 **Requirements:**
-- Go 1.18 or later
+- Go 1.26.2 or later
 
 ```bash
 # Install from source
