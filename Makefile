@@ -1,14 +1,18 @@
 .PHONY: build clean test run
 
-BINARY_NAME=dloom
-BUILD_DIR=bin
+GO ?= go
+BINARY_NAME ?= dloom
+BUILD_DIR ?= bin
+VERSION ?= dev
+GO_BUILD_FLAGS ?= -trimpath
+GO_LDFLAGS ?= -s -w -X github.com/dloomorg/dloom/cmd.Version=$(VERSION)
 
 build:
 	@echo "Building $(BINARY_NAME) in $(BUILD_DIR)..."
 	@mkdir -p $(BUILD_DIR)
 	@echo "Created build dir $(BUILD_DIR)..."
-	@echo "Invoking go build -o $(BUILD_DIR)/$(BINARY_NAME)..."
-	@go build -o $(BUILD_DIR)/$(BINARY_NAME)
+	@echo "Invoking $(GO) build -o $(BUILD_DIR)/$(BINARY_NAME)..."
+	@$(GO) build $(GO_BUILD_FLAGS) -ldflags "$(GO_LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME) .
 	@echo "Completed go build to $(BUILD_DIR)/$(BINARY_NAME)..."
 	@echo "Directory listing for $(BUILD_DIR)..."
 	@ls -la $(BUILD_DIR)

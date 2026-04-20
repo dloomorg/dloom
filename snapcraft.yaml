@@ -14,21 +14,21 @@ platforms:
 parts:
   dloom:
     plugin: go
-    source: https://github.com/dloomorg/dloom
-    source-type: git
-    source-branch: main
-    override-pull: |
-      snapcraftctl pull
-      snapcraftctl set-version \
-      "$(git describe --long --tags --always --match=v*.*.* | sed 's/v//')"
+    source: .
+    source-type: local
     build-snaps:
       - go/1.26/stable
     build-packages:
+      - git
       - make
+    build-environment:
+      - CGO_ENABLED: "0"
     override-build: |
-      make build
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      cp bin/dloom $SNAPCRAFT_PART_INSTALL/bin/dloom
+      version="$(git -C "$CRAFT_PROJECT_DIR" describe --long --tags --always --match='v*.*.*' 2>/dev/null || git -C "$CRAFT_PROJECT_DIR" rev-parse --short=12 HEAD 2>/dev/null || printf 'dev')"
+      version="${version#v}"
+      craftctl set version="$version"
+      make build VERSION="$version"
+      install -Dm755 bin/dloom "$CRAFT_PART_INSTALL/bin/dloom"
 
 apps:
   dloom:

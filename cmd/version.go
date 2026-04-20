@@ -9,7 +9,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version of dloom",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("dloom version: ", Version)
+		fmt.Println("dloom version:", ifEmpty(Version, "dev"))
 	},
 }
 
