@@ -34,6 +34,37 @@ brew tap dloomorg/dloom https://github.com/dloomorg/dloom
 brew install dloomorg/dloom/dloom
 ```
 
+### Arch Linux (AUR)
+
+For Arch Linux users, `dloom` is available in the AUR in two variants. The current AUR packages target `x86_64`:
+
+- `dloom`: builds from source
+- `dloom-bin`: installs the pre-built Linux `x86_64` release binary
+
+If you use an AUR helper such as `yay` or `paru`:
+
+```bash
+# Build from source
+yay -S dloom
+
+# Or install the pre-built binary package
+yay -S dloom-bin
+```
+
+To install manually from the AUR, clone the package you want and build it with `makepkg`:
+
+```bash
+# Build from source
+git clone https://aur.archlinux.org/dloom.git
+cd dloom
+makepkg -si
+
+# Or install the pre-built binary package
+git clone https://aur.archlinux.org/dloom-bin.git
+cd dloom-bin
+makepkg -si
+```
+
 ### Pre-built Binaries
 
 `dloom` ships as separate binaries for each supported OS and CPU architecture. Download the release asset that matches your platform, extract it, and place the `dloom` binary in your `PATH`.
