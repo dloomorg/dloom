@@ -200,3 +200,31 @@ link_overrides:
           executable:
             - "sudo"
             - "apt"
+
+  # Machine-specific configurations using hostname
+  # Run `hostname` in your terminal to find the value to use here
+  work-dotfiles:
+    conditions:
+      hostname:
+        - "work-macbook"
+        - "work-linux"
+
+  personal-dotfiles:
+    conditions:
+      hostname:
+        - "home-mac"
+        - "home-desktop"
+
+  # SSH config differs per machine — same target name, different source files
+  ssh:
+    file_overrides:
+      "config.work":
+        target_name: "config"
+        conditions:
+          hostname:
+            - "work-macbook"
+      "config.personal":
+        target_name: "config"
+        conditions:
+          hostname:
+            - "home-mac"

@@ -298,14 +298,140 @@ dloom -d unlink <package>...  # Dry run (preview only)
 
 ## Conditional Linking
 
-`dloom` supports conditional linking based on:
+`dloom` supports conditional linking based on conditions specified in the config file. Conditions can be applied at the package level (affect all files in the package) or at the file level (affect individual files or regex-matched groups).
 
-- **Operating System**: Link files only on specific OS.
-- **Linux Distribution**: Link files only on specific distros.
-- **Executable Presence**: Link files only if certain executables exist (for instance use a different waybar config file for hyprland vs sway).
-- **Executable Version**: Link files only if executables meet version requirements.
+**Logic rules:**
+- Multiple condition types are **AND-ed** — all must pass for the file to be linked.
+- Multiple values within a single condition type are **OR-ed** — any one matching is enough.
 
-When multiple conditions are specified, they are AND-ed together. For example, if you want to link a file only if the OS is Linux and the executable `git` is installed, you can specify both conditions in the configuration file. For a given condition, if multiple values are specified, they are OR-ed together. For example, if you want to link a file only if the OS is either Linux or macOS, you can specify both values in the configuration file.
+```yaml
+link_overrides:
+  mypkg:
+    conditions:
+      os: [linux, darwin]   # AND-ed with other condition types below
+      executable: [git]     # both must be true for the package to link
+```
+
+### Condition Reference
+
+#### `os` — Operating System
+
+Links only on the specified operating system(s). Values match Go's `runtime.GOOS`: `linux`, `darwin` (macOS), `windows`.
+
+```yaml
+conditions:
+  os:
+    - linux
+    - darwin   # link on Linux or macOS, skip on Windows
+```
+
+#### `distro` — Linux Distribution
+
+Links only on the specified Linux distribution(s). Detected from `/etc/os-release`. Common values: `ubuntu`, `debian`, `arch`, `fedora`, `nixos`. On non-Linux systems this condition is ignored (always passes).
+
+```yaml
+conditions:
+  distro:
+    - ubuntu
+    - debian
+```
+
+#### `executable` — Installed Program
+
+Links only if all listed executables are found in `$PATH`. Useful for linking tool-specific configs only when that tool is installed.
+
+```yaml
+conditions:
+  executable:
+    - tmux    # link only if tmux is installed
+```
+
+Multiple executables are AND-ed — all must be present:
+
+```yaml
+conditions:
+  executable:
+    - node
+    - npm
+```
+
+#### `executable_version` — Program Version
+
+Links only if the specified executables meet the given version constraints. Supports operators `>=`, `>`, `<=`, `<`, `=`.
+
+```yaml
+conditions:
+  executable_version:
+    tmux: ">=3.0"     # tmux 3.0 or newer
+    node: ">=18.0.0"
+```
+
+Combine with `executable` if the program might not be installed at all:
+
+```yaml
+conditions:
+  executable:
+    - tmux
+  executable_version:
+    tmux: ">=3.0"
+```
+
+#### `user` — System User
+
+Links only when the current user matches. Useful for shared machines or shared dotfiles repos with multiple contributors.
+
+```yaml
+conditions:
+  user:
+    - alice
+    - bob
+```
+
+#### `hostname` — Machine Hostname
+
+Links only when the system hostname matches. Useful for maintaining one dotfiles repo across multiple machines — work laptop, home desktop, servers — and linking only what belongs on each.
+
+```yaml
+conditions:
+  hostname:
+    - work-macbook
+    - work-desktop
+```
+
+**Example: work vs. personal machine separation**
+
+```yaml
+link_overrides:
+  # Work-specific configs — only on work machines
+  work:
+    conditions:
+      hostname:
+        - work-macbook
+        - work-linux
+
+  # Personal configs — only on personal machines
+  personal:
+    conditions:
+      hostname:
+        - home-mac
+        - home-desktop
+
+  # SSH config differs per machine
+  ssh:
+    file_overrides:
+      "config.work":
+        target_name: "config"
+        conditions:
+          hostname:
+            - work-macbook
+      "config.personal":
+        target_name: "config"
+        conditions:
+          hostname:
+            - home-mac
+```
+
+The hostname value is whatever `hostname` returns on your system (or `os.Hostname()` in Go). Run `hostname` in your terminal to confirm the exact value to use.
 
 ## Project Structure
 
