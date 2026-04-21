@@ -24,4 +24,5 @@ go.work
 *.swp
 *.swo
 .codex
-
+packaging/aur/PKGBUILD
+packaging/aur/.SRCINFO

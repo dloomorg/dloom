@@ -1,0 +1,79 @@
+name: Publish AUR
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Stable version to publish to AUR, for example 1.0.0 or v1.0.0
+        required: true
+        type: string
+      pkgrel:
+        description: pkgrel override for packaging-only updates
+        required: false
+        default: '1'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    environment: aur
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Derive package metadata
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_PKGREL: ${{ inputs.pkgrel }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          raw_version="${INPUT_VERSION:-${RELEASE_TAG:-}}"
+          if [[ -z "${raw_version}" ]]; then
+            echo "No version provided." >&2
+            exit 1
+          fi
+
+          version="${raw_version#v}"
+          pkgrel="${INPUT_PKGREL:-1}"
+
+          case "${version}" in
+            *rc*|*beta*|*alpha*)
+              echo "Refusing to publish prerelease version ${version} to the stable AUR package." >&2
+              exit 1
+              ;;
+          esac
+
+          echo "VERSION=${version}" >> "${GITHUB_ENV}"
+          echo "PKGREL=${pkgrel}" >> "${GITHUB_ENV}"
+
+      - name: Render AUR package metadata
+        run: ./scripts/aur/render-aur.sh "${VERSION}" --pkgrel "${PKGREL}"
+
+      - name: Generate .SRCINFO
+        run: ./scripts/aur/generate-srcinfo.sh
+
+      - name: Configure SSH for AUR
+        env:
+          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        run: |
+          install -d -m 700 "${HOME}/.ssh"
+          printf '%s\n' "${AUR_SSH_PRIVATE_KEY}" > "${HOME}/.ssh/aur"
+          chmod 600 "${HOME}/.ssh/aur"
+          ssh-keyscan aur.archlinux.org >> "${HOME}/.ssh/known_hosts"
+
+      - name: Push packaging repo
+        env:
+          AUR_PKGNAME: dloom
+          AUR_COMMIT_NAME: ${{ vars.AUR_GIT_NAME }}
+          AUR_COMMIT_EMAIL: ${{ vars.AUR_GIT_EMAIL }}
+        run: |
+          export AUR_SSH_KEY_PATH="${HOME}/.ssh/aur"
+          ./scripts/aur/push-aur.sh
