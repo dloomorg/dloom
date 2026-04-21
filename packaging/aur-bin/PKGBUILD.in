@@ -1,0 +1,24 @@
+# Maintainer: Swaranga Sarma <sarma.swaranga@gmail.com>
+pkgname=dloom-bin
+_pkgname=dloom
+pkgver=@PKGVER@
+pkgrel=@PKGREL@
+pkgdesc='Prebuilt binary release of dloom, a flexible dotfile symlink manager and system bootstrapper'
+arch=('x86_64')
+url='https://github.com/dloomorg/dloom'
+license=('MIT')
+provides=('dloom')
+conflicts=('dloom')
+source=(
+  "${_pkgname}_v${pkgver}_linux_amd64.tar.gz::@BINARY_URL@"
+  "${_pkgname}-${pkgver}.tar.gz::@SOURCE_URL@"
+)
+sha256sums=(
+  '@BINARY_SHA256@'
+  '@SOURCE_SHA256@'
+)
+
+package() {
+  install -Dm755 "${srcdir}/${_pkgname}" "${pkgdir}/usr/bin/${_pkgname}"
+  install -Dm644 "${srcdir}/${_pkgname}-${pkgver}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

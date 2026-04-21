@@ -2,7 +2,8 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-source_dir="${repo_root}/packaging/aur"
+packaging_rel_dir="${AUR_PACKAGING_DIR:-packaging/aur}"
+source_dir="${repo_root}/${packaging_rel_dir}"
 pkgname="${AUR_PKGNAME:-dloom}"
 aur_repo="${AUR_REPO:-ssh://aur@aur.archlinux.org/${pkgname}.git}"
 aur_branch="${AUR_BRANCH:-master}"
@@ -33,12 +34,8 @@ git -C "${clone_dir}" config commit.gpgsign false
 
 rsync -a --delete \
   --exclude '.git/' \
-  --include '/PKGBUILD' \
-  --include '/.SRCINFO' \
-  --include '/LICENSE' \
-  --include '/*.install' \
-  --include '/*.patch' \
-  --exclude '*' \
+  --exclude 'PKGBUILD.in' \
+  --exclude '.DS_Store' \
   "${source_dir}/" "${clone_dir}/"
 
 if [[ -z "$(git -C "${clone_dir}" status --short)" ]]; then

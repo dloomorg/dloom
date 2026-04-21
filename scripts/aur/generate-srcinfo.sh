@@ -2,7 +2,8 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-packaging_dir="${repo_root}/packaging/aur"
+packaging_rel_dir="${AUR_PACKAGING_DIR:-packaging/aur}"
+packaging_dir="${repo_root}/${packaging_rel_dir}"
 
 if [[ ! -f "${packaging_dir}/PKGBUILD" ]]; then
   echo "Expected ${packaging_dir}/PKGBUILD. Run scripts/aur/render-aur.sh first." >&2
@@ -26,7 +27,7 @@ fi
 docker run --rm \
   --user "$(id -u):$(id -g)" \
   --volume "${repo_root}:/work" \
-  --workdir /work/packaging/aur \
+  --workdir "/work/${packaging_rel_dir}" \
   archlinux:base-devel \
   bash -lc 'makepkg --printsrcinfo > .SRCINFO'
 

@@ -7,7 +7,7 @@ arch=('x86_64')
 url='https://github.com/dloomorg/dloom'
 license=('MIT')
 makedepends=('go')
-source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+source=("${pkgname}-${pkgver}.tar.gz::@SOURCE_URL@")
 sha256sums=('@SHA256@')
 
 prepare() {

@@ -26,3 +26,5 @@ go.work
 .codex
 packaging/aur/PKGBUILD
 packaging/aur/.SRCINFO
+packaging/aur-bin/PKGBUILD
+packaging/aur-bin/.SRCINFO
