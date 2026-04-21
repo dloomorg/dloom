@@ -87,3 +87,21 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '.rc.') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish_aur:
+    name: Publish AUR
+    needs: release
+    if: ${{ !contains(github.ref_name, '.rc.') }}
+    uses: ./.github/workflows/publish-aur.yml
+    with:
+      version: ${{ github.ref_name }}
+    secrets: inherit
+
+  publish_aur_bin:
+    name: Publish AUR Bin
+    needs: release
+    if: ${{ !contains(github.ref_name, '.rc.') }}
+    uses: ./.github/workflows/publish-aur-bin.yml
+    with:
+      version: ${{ github.ref_name }}
+    secrets: inherit
