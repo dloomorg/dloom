@@ -10,7 +10,7 @@ A lightweight, flexible dotfile manager and system bootstrapper for macOS and Li
 
 ## Overview
 
-**dloom** (pronounced *dee-loom*) is a CLI (command-line interface) tool that _links_ and _unlinks_ configuration files (or _dotfiles_) in a development machine. It manages symlinks between a dotfiles repository (or any source directory) and the machine's target directory (_home_ directory by default; overridable). The tool is inspired from GNU Stow and other dotfile managers, but differs in its approach by creating symlinks for individual files instead of directories. This enables other applications to add files to the same parent directories without them needing to be tracked in the dotfiles repository.
+**dloom** (pronounced *dee-loom*) is a CLI (command-line interface) tool that _links_, _unlinks_, and _adopts_ configuration files (or _dotfiles_) in a development machine. It manages symlinks between a dotfiles repository (or any source directory) and the machine's target directory (_home_ directory by default; overridable). The tool is inspired from GNU Stow and other dotfile managers, but differs in its approach by creating symlinks for individual files instead of directories. This enables other applications to add files to the same parent directories without them needing to be tracked in the dotfiles repository.
 
 ## Features
 
@@ -19,6 +19,7 @@ A lightweight, flexible dotfile manager and system bootstrapper for macOS and Li
   - This is the main difference from GNU Stow. _It means that the addition of a file to a directory in your dotfiles repository will not automatically create a symlink for it. You will need to run `dloom link` again to create the symlink for the new file._
   - Additionally, links for files can have different names in the target directory. This allows users to have separate dotfiles for different environments (e.g., macOS vs. Linux) without needing to maintain separate branches or repositories, while still having the same name for the symlinked file.
 - **Conditional Linking**: Link files only when specific conditions are met (OS, distro, installed tools, tool versions).
+- **Adopt Existing Files**: Move existing files from the target directory into your dotfiles repository and replace them with symlinks.
 - **Customize Setup (Optional)**: Allows customization of how the system is set up using a configuration file. Override settings at the global, package, or file level, including support for regex patterns.
 - **Backup System**: Automatically backs up existing files before replacing them.
 - **Dry Run Mode**: Preview changes without modifying your system.
@@ -86,7 +87,7 @@ go build -o bin/dloom
 
 ## Quick Start
 
-dloom has two main commands: `link` and `unlink`. The `link` command creates symlinks for your dotfiles, while the `unlink` command removes them.
+dloom has three main commands: `link`, `unlink`, and `adopt`. The `link` command creates symlinks for your dotfiles, `unlink` removes them, and `adopt` moves existing target files into your source package before linking them back.
 
 ### Linking Dotfiles
 
@@ -173,6 +174,39 @@ dloom unlink .
 ```
 
 Unlink will only remove links if they were created by `dloom`, i.e - if the links are pointing to files in the source (usually the dotfiles) directory. Any extra files in the target directory will remain untouched. If `dloom` finds any backups for files that were unlinked, it will restore them. Finally, if the target directory becomes empty after unlinking (and if no backups were found), the directory will be removed. 
+
+### Adopting Existing Files
+
+To move existing files into a package and replace them with symlinks, use `adopt`:
+
+```bash
+# Adopt a single file into the zsh package
+dloom adopt zsh ~/.zshrc
+
+# Adopt a whole directory into the ghostty package
+dloom adopt ghostty ~/.config/ghostty
+
+# Adopt multiple paths into one package
+dloom adopt git ~/.gitconfig ~/.config/git
+
+# Preview the changes first
+dloom -d adopt zsh ~/.zshrc
+
+# Confirm each file before adopting it
+dloom adopt -i hypr ~/.config/hypr
+
+# Preview interactively without changing anything
+dloom -d adopt -i hypr ~/.config/hypr
+```
+
+`adopt` uses the same package-oriented layout as `link`: it determines where files belong inside the package based on the package target directory, copies the files into the package source tree, removes the originals, and then creates symlinks back to the adopted copies. Existing symlinks are skipped. Use `-i` or `--interactive` to confirm each file before it is adopted. You can combine it with `-d` to preview only the files you confirm, without changing anything.
+
+Current limitations:
+
+- `adopt` only supports direct path mapping. Packages with `regex:` file overrides are not supported.
+- `adopt` does not support file overrides that change `target_name` or `target_dir`.
+- `adopt` does not support `--force`; if the destination file already exists in the source package, resolve the conflict manually.
+- Existing symlinks are skipped. Symlinks that already point at the expected source file are treated as already adopted.
 
 ### Backup System
 
