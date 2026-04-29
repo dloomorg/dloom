@@ -15,7 +15,10 @@
       "Bash(/Users/pradipta.s/projects/dloom/bin/dloom -d link vim)",
       "Bash(/Users/pradipta.s/projects/dloom/bin/dloom -d unlink .)",
       "Bash(make clean *)",
-      "Bash(clear *)"
+      "Bash(clear *)",
+      "Bash(go build *)",
+      "Bash(bin/dloom-test version *)",
+      "Bash(echo \"---exit: $?\")"
     ]
   }
 }
