@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dloomorg/dloom/internal"
 	"github.com/dloomorg/dloom/internal/logging"
+	"github.com/dloomorg/dloom/internal/update"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
@@ -68,6 +69,13 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		return nil
+	},
+	PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
+		if notice := update.PendingNotice(Version); notice != "" {
+			logger.LogInfo(notice)
+		}
+		go update.CheckAndCache()
 		return nil
 	},
 }
