@@ -522,6 +522,32 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## Releasing
+
+Releases are driven by git tags. Pushing a tag that matches `vX.Y.Z` runs the [Release workflow](.github/workflows/release.yml), which:
+
+1. Builds `linux` and `darwin` binaries for `amd64` and `arm64`
+2. Creates a GitHub Release with the tarballs and a `SHA256SUMS.txt`
+3. Publishes the `dloom` and `dloom-bin` AUR packages
+4. Updates [`Formula/dloom.rb`](Formula/dloom.rb) to the new tag and commits it to `main`, which publishes the release to the Homebrew tap
+
+To cut a release:
+
+```bash
+git checkout main && git pull
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+Tags of the form `vX.Y.Z.rc.N` (e.g. `v1.2.3.rc.1`) create a GitHub prerelease and skip the AUR and Homebrew steps.
+
+If a publish step fails, re-run it from the Actions tab with **Run workflow** and the version to publish:
+
+- **Publish Homebrew**: re-points the formula at the given tag. It does nothing if the formula is already at that version.
+- **Publish AUR** / **Publish AUR Bin**: re-push the AUR packages. Set `pkgrel` above `1` to ship a packaging-only fix for the same version.
+
+Snap packages are not published by these workflows.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
