@@ -536,10 +536,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 Releases are driven by git tags. Pushing a tag that matches `vX.Y.Z` runs the [Release workflow](.github/workflows/release.yml), which:
 
-1. Builds `linux` and `darwin` binaries for `amd64` and `arm64`
-2. Creates a GitHub Release with the tarballs and a `SHA256SUMS.txt`
-3. Publishes the `dloom` and `dloom-bin` AUR packages
-4. Updates [`Formula/dloom.rb`](Formula/dloom.rb) to the new tag and commits it to `main`, which publishes the release to the Homebrew tap
+1. Runs the tests on Linux and macOS; a failure stops the release
+2. Builds `linux` and `darwin` binaries for `amd64` and `arm64`
+3. Creates a GitHub Release with the tarballs and a `SHA256SUMS.txt`
+4. Publishes the `dloom` and `dloom-bin` AUR packages
+5. Updates [`Formula/dloom.rb`](Formula/dloom.rb) to the new tag and commits it to `main`, which publishes the release to the Homebrew tap
 
 To cut a release:
 
@@ -557,6 +558,18 @@ If a publish step fails, re-run it from the Actions tab with **Run workflow** an
 - **Publish AUR** / **Publish AUR Bin**: re-push the AUR packages. Set `pkgrel` above `1` to ship a packaging-only fix for the same version.
 
 Snap packages are not published by these workflows.
+
+### Release secrets
+
+The publish steps need these repository settings (**Settings → Secrets and variables → Actions**):
+
+| Name | Kind | Used by | Value |
+|------|------|---------|-------|
+| `AUR_SSH_PRIVATE_KEY` | Secret in the `aur` environment | Publish AUR, Publish AUR Bin | Private SSH key whose public key is on the AUR maintainer account |
+| `AUR_GIT_NAME`, `AUR_GIT_EMAIL` | Variables in the `aur` environment (optional) | Publish AUR, Publish AUR Bin | Author of the AUR commits |
+| `HOMEBREW_PUSH_TOKEN` | Repository secret | Publish Homebrew | Fine-grained personal access token from a repo admin with **Contents: Read and write** on `dloomorg/dloom` |
+
+`main` requires pull requests, and the built-in `GITHUB_TOKEN` can't bypass that, so the Homebrew step pushes with an admin's token instead. When the token expires, the Homebrew step fails with a push error; create a new token, update the secret, and re-run **Publish Homebrew** for the release.
 
 ## License
 

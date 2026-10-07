@@ -15,7 +15,7 @@ on:
         type: string
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: publish-homebrew
@@ -28,10 +28,22 @@ jobs:
       FORMULA_PATH: Formula/dloom.rb
 
     steps:
+      # main requires pull requests, which the built-in GITHUB_TOKEN can't bypass. Pushing with
+      # a repo admin's token goes through the same way the admin's own pushes do.
+      - name: Check push token
+        env:
+          HOMEBREW_PUSH_TOKEN: ${{ secrets.HOMEBREW_PUSH_TOKEN }}
+        run: |
+          if [[ -z "${HOMEBREW_PUSH_TOKEN}" ]]; then
+            echo "The HOMEBREW_PUSH_TOKEN secret is not set. See the Releasing section of the README." >&2
+            exit 1
+          fi
+
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
+          token: ${{ secrets.HOMEBREW_PUSH_TOKEN }}
 
       - name: Derive version
         env:
