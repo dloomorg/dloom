@@ -1,0 +1,81 @@
+name: Publish Homebrew
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Stable version to publish to Homebrew, for example 1.0.0 or v1.0.0
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Stable version to publish to Homebrew, for example 1.0.0 or v1.0.0
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-homebrew
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      FORMULA_PATH: Formula/dloom.rb
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Derive version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          version="${INPUT_VERSION#v}"
+          if [[ -z "${version}" ]]; then
+            echo "No version provided." >&2
+            exit 1
+          fi
+
+          case "${version}" in
+            *rc*|*beta*|*alpha*)
+              echo "Refusing to publish prerelease version ${version} to Homebrew." >&2
+              exit 1
+              ;;
+          esac
+
+          echo "VERSION=${version}" >> "${GITHUB_ENV}"
+
+      - name: Update formula
+        run: |
+          url="https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/v${VERSION}.tar.gz"
+          sha256="$(curl -fsSL --retry 3 "${url}" | sha256sum | cut -d' ' -f1)"
+
+          sed -i -E \
+            -e "s|^(  url \").*(\")$|\1${url}\2|" \
+            -e "s|^(  sha256 \").*(\")$|\1${sha256}\2|" \
+            "${FORMULA_PATH}"
+
+          grep -qF "url \"${url}\"" "${FORMULA_PATH}"
+          grep -qF "sha256 \"${sha256}\"" "${FORMULA_PATH}"
+          ruby -c "${FORMULA_PATH}"
+          git diff -- "${FORMULA_PATH}"
+
+      - name: Commit and push
+        run: |
+          if git diff --quiet -- "${FORMULA_PATH}"; then
+            echo "Formula already at v${VERSION}; nothing to publish."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Updates Homebrew formula to v${VERSION}" -- "${FORMULA_PATH}"
+          git pull --rebase origin main
+          git push origin HEAD:main

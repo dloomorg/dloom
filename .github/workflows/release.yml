@@ -105,3 +105,11 @@ jobs:
     with:
       version: ${{ github.ref_name }}
     secrets: inherit
+
+  publish_homebrew:
+    name: Publish Homebrew
+    needs: release
+    if: ${{ !contains(github.ref_name, '.rc.') }}
+    uses: ./.github/workflows/publish-homebrew.yml
+    with:
+      version: ${{ github.ref_name }}
