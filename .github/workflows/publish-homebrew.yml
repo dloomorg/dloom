@@ -32,10 +32,10 @@ jobs:
       # a repo admin's token goes through the same way the admin's own pushes do.
       - name: Check push token
         env:
-          HOMEBREW_PUSH_TOKEN: ${{ secrets.HOMEBREW_PUSH_TOKEN }}
+          DLOOM_HOMEBREW_PUSH_TOKEN: ${{ secrets.DLOOM_HOMEBREW_PUSH_TOKEN }}
         run: |
-          if [[ -z "${HOMEBREW_PUSH_TOKEN}" ]]; then
-            echo "The HOMEBREW_PUSH_TOKEN secret is not set. See the Releasing section of the README." >&2
+          if [[ -z "${DLOOM_HOMEBREW_PUSH_TOKEN}" ]]; then
+            echo "The DLOOM_HOMEBREW_PUSH_TOKEN secret is not set. See the Releasing section of the README." >&2
             exit 1
           fi
 
@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          token: ${{ secrets.HOMEBREW_PUSH_TOKEN }}
+          token: ${{ secrets.DLOOM_HOMEBREW_PUSH_TOKEN }}
 
       - name: Derive version
         env:

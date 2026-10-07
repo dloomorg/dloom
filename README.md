@@ -567,7 +567,7 @@ The publish steps need these repository settings (**Settings → Secrets and var
 |------|------|---------|-------|
 | `AUR_SSH_PRIVATE_KEY` | Secret in the `aur` environment | Publish AUR, Publish AUR Bin | Private SSH key whose public key is on the AUR maintainer account |
 | `AUR_GIT_NAME`, `AUR_GIT_EMAIL` | Variables in the `aur` environment (optional) | Publish AUR, Publish AUR Bin | Author of the AUR commits |
-| `HOMEBREW_PUSH_TOKEN` | Repository secret | Publish Homebrew | Fine-grained personal access token from a repo admin with **Contents: Read and write** on `dloomorg/dloom` |
+| `DLOOM_HOMEBREW_PUSH_TOKEN` | Repository secret | Publish Homebrew | Fine-grained personal access token from a repo admin with **Contents: Read and write** on `dloomorg/dloom` |
 
 `main` requires pull requests, and the built-in `GITHUB_TOKEN` can't bypass that, so the Homebrew step pushes with an admin's token instead. When the token expires, the Homebrew step fails with a push error; create a new token, update the secret, and re-run **Publish Homebrew** for the release.
 
