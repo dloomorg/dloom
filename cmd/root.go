@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 var Version string
@@ -24,7 +25,12 @@ var (
 	sourceDir  string
 	targetDir  string
 	noColor    bool
+
+	updateCheck <-chan struct{}
 )
+
+// updateCheckWait bounds how long a command waits at exit for a background update check.
+const updateCheckWait = time.Second
 
 var rootCmd = &cobra.Command{
 	Use:   "dloom",
@@ -39,6 +45,7 @@ var rootCmd = &cobra.Command{
 	},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		logger = &logging.Logger{UseColors: !noColor}
+		updateCheck = update.StartCheck()
 
 		var err error
 		cfg, err = internal.LoadConfig(configPath, logger)
@@ -72,10 +79,10 @@ var rootCmd = &cobra.Command{
 		return nil
 	},
 	PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
+		update.Wait(updateCheck, updateCheckWait)
 		if notice := update.PendingNotice(Version); notice != "" {
-			logger.LogInfo(notice)
+			logger.LogWarning("%s", notice)
 		}
-		go update.CheckAndCache()
 		return nil
 	},
 }

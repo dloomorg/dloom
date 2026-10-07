@@ -361,6 +361,16 @@ dloom -d unlink <package>...  # Dry run (preview only)
 | `-s, --source, --src` | Source directory |
 | `-t, --target, --dest` | Target directory |
 
+### Update Notifications
+
+Once a day, `dloom` checks GitHub for a newer stable release. If one exists, it prints a notice to stderr after the command finishes. The result is cached in your user cache directory (`~/Library/Caches/dloom` on macOS, `~/.cache/dloom` on Linux), so other runs don't touch the network.
+
+To turn the check off, set `DLOOM_NO_UPDATE_CHECK` to any non-empty value:
+
+```bash
+export DLOOM_NO_UPDATE_CHECK=1
+```
+
 ## Conditional Linking
 
 `dloom` supports conditional linking based on conditions specified in the config file. Conditions can be applied at the package level (affect all files in the package) or at the file level (affect individual files or regex-matched groups).

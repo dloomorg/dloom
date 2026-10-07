@@ -14,6 +14,7 @@ import (
 const (
 	cacheFileName = "update_check.json"
 	cacheTTL      = 24 * time.Hour
+	disableEnvVar = "DLOOM_NO_UPDATE_CHECK"
 	apiURL        = "https://api.github.com/repos/dloomorg/dloom/releases/latest"
 	releasesURL   = "https://github.com/dloomorg/dloom/releases/latest"
 )
@@ -64,7 +65,20 @@ func saveCache(entry *CacheEntry) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(path, data, 0644)
+	// Write to a temp file and rename so an interrupted write never leaves a partial cache.
+	tmp, err := os.CreateTemp(filepath.Dir(path), cacheFileName+".*")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmp.Name())
+	if _, err := tmp.Write(data); err != nil {
+		tmp.Close()
+		return err
+	}
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+	return os.Rename(tmp.Name(), path)
 }
 
 // FetchLatestVersion calls the GitHub Releases API and returns the latest stable release tag.
@@ -88,21 +102,48 @@ func FetchLatestVersion() (string, error) {
 	return release.TagName, nil
 }
 
-// CheckAndCache fetches the latest version if the cache is stale and saves the result.
-// Safe to call from a goroutine; all errors are silently ignored.
-func CheckAndCache() {
-	if os.Getenv("DLOOM_NO_UPDATE_CHECK") != "" {
-		return
+// StartCheck refreshes the cached latest version in the background if the cache is stale.
+// The returned channel is closed when the check finishes, or immediately if no check is needed.
+func StartCheck() <-chan struct{} {
+	done := make(chan struct{})
+	if os.Getenv(disableEnvVar) != "" {
+		close(done)
+		return done
 	}
 	cache, _ := loadCache()
 	if cache != nil && time.Since(cache.CheckedAt) < cacheTTL {
+		close(done)
+		return done
+	}
+	go func() {
+		defer close(done)
+		refreshCache(cache)
+	}()
+	return done
+}
+
+// Wait blocks until done is closed or timeout elapses, whichever comes first.
+func Wait(done <-chan struct{}, timeout time.Duration) {
+	if done == nil {
 		return
 	}
-	latest, err := FetchLatestVersion()
-	if err != nil || latest == "" {
-		return
+	select {
+	case <-done:
+	case <-time.After(timeout):
 	}
-	_ = saveCache(&CacheEntry{CheckedAt: time.Now(), LatestVersion: latest})
+}
+
+// refreshCache fetches the latest version and saves it. Failed fetches are cached too,
+// keeping the previously known version, so offline or rate-limited users don't retry on every run.
+func refreshCache(previous *CacheEntry) {
+	entry := CacheEntry{CheckedAt: time.Now()}
+	if previous != nil {
+		entry.LatestVersion = previous.LatestVersion
+	}
+	if latest, err := FetchLatestVersion(); err == nil && latest != "" {
+		entry.LatestVersion = latest
+	}
+	_ = saveCache(&entry)
 }
 
 // PendingNotice returns a non-empty notice string if a newer stable version is cached.
@@ -110,7 +151,7 @@ func PendingNotice(currentVersion string) string {
 	if currentVersion == "" || currentVersion == "dev" {
 		return ""
 	}
-	if os.Getenv("DLOOM_NO_UPDATE_CHECK") != "" {
+	if os.Getenv(disableEnvVar) != "" {
 		return ""
 	}
 	cache, err := loadCache()
@@ -119,7 +160,7 @@ func PendingNotice(currentVersion string) string {
 	}
 	if isNewer(cache.LatestVersion, currentVersion) {
 		return fmt.Sprintf(
-			"A new version of dloom is available: %s (you have %s)\n       %s",
+			"A new version of dloom is available: %s (you have %s). Upgrade with your package manager or download it from %s",
 			cache.LatestVersion, currentVersion, releasesURL,
 		)
 	}
