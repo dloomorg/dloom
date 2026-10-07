@@ -15,9 +15,11 @@ const (
 	cacheFileName = "update_check.json"
 	cacheTTL      = 24 * time.Hour
 	disableEnvVar = "DLOOM_NO_UPDATE_CHECK"
-	apiURL        = "https://api.github.com/repos/dloomorg/dloom/releases/latest"
 	releasesURL   = "https://github.com/dloomorg/dloom/releases/latest"
 )
+
+// apiURL is a variable so tests can point it at a local server.
+var apiURL = "https://api.github.com/repos/dloomorg/dloom/releases/latest"
 
 type CacheEntry struct {
 	CheckedAt     time.Time `json:"checked_at"`
